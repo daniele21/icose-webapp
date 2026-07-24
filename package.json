@@ -1,0 +1,9 @@
+{
+  "name": "icose-webapp",
+  "version": "1.0.0",
+  "description": "Icose web application",
+  "scripts": {
+    "start": "npx serve public",
+    "deploy": "firebase deploy"
+  }
+}
