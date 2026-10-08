@@ -51,10 +51,7 @@ body {
   color: var(--c-ink);
   background: var(--c-bg);
   line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
-  background: red;
 }
 
 img { max-width: 100%; display: block; }
@@ -1130,6 +1127,19 @@ body { text-rendering: optimizeLegibility; }
 /* Brand on hover (subtle) */
 .brand { transition: opacity .2s; }
 .brand:hover { opacity: .85; }
+
+/* =========================================================
+   Page-specific components (ex-inline from contatti, whistleblowing)
+   ========================================================= */
+.map-embed { aspect-ratio: 16/7; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--c-line); margin-top: 36px; }
+.map-embed iframe { width:100%; height:100%; border:0; display:block; }
+.contact-card { background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-md); padding: 28px; }
+.contact-card h3 { margin-top: 12px; font-size: 1.1rem; }
+.contact-card p, .contact-card address { margin: 6px 0; color: var(--c-ink-2); font-style: normal; line-height: 1.6; font-size: .95rem; }
+.contact-card a { color: var(--c-accent); font-weight: 600; }
+
+#wb-result { display: none; padding: 22px; background: #e9f5ee; border-left: 3px solid var(--c-success); border-radius: var(--radius-sm); margin-top: 24px; }
+#wb-result strong { font-family: 'Manrope', monospace; font-size: 1.2rem; color: var(--c-success); }
 
 /* Accessibilità — rispetta prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {

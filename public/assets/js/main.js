@@ -6,8 +6,9 @@
   const nav = document.querySelector('.nav');
   if (toggle && nav) {
     toggle.addEventListener('click', () => {
-      nav.classList.toggle('is-open');
-      document.body.style.overflow = nav.classList.contains('is-open') ? 'hidden' : '';
+      const isOpen = nav.classList.toggle('is-open');
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+      toggle.setAttribute('aria-label', isOpen ? 'Chiudi menu' : 'Apri menu');
     });
     nav.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', () => {
@@ -38,12 +39,13 @@
     });
   }
 
-  // Reveal on scroll
+  // Reveal on scroll — with tracking to avoid re-processing
+  const revealed = new WeakSet();
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
+      if (e.isIntersecting && !revealed.has(e.target)) {
+        revealed.add(e.target);
         e.target.classList.add('is-in');
-        observer.unobserve(e.target);
       }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
@@ -99,8 +101,4 @@
       cForm.reset();
     });
   }
-
-  // Footer year
-  const yr = document.getElementById('yr');
-  if (yr) yr.textContent = new Date().getFullYear();
 })();

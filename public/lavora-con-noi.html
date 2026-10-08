@@ -9,17 +9,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <meta property="og:title" content="Lavora con noi · ICOSE S.p.A.">
+  <meta property="og:description" content="Lavora con ICOSE: invia la tua candidatura spontanea per opportunità professionali nei cantieri, negli impianti e negli uffici di ICOSE S.p.A.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://icose-spa.web.app/assets/img/icose-logo.jpg">
+  <script src="assets/js/templates.js"></script>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="site-header__topbar"><div class="container"><div>Uffici Cisano sul Neva (SV) · <a href="tel:+390182589021">0182 58921</a> · <a href="mailto:icose@icose.it">icose@icose.it</a></div><div class="tb-links"><a href="contatti.html">Contattaci</a><a href="lavora-con-noi.html">Lavora con noi</a><a href="whistleblowing.html">Whistleblowing</a></div></div></div>
-  <div class="container"><div class="site-header__bar">
-    <a href="index.html" class="brand" aria-label="ICOSE S.p.A."><img src="assets/img/icose-logo.jpg" alt="ICOSE S.p.A." class="brand__logo"></a>
-    <button class="nav-toggle" aria-label="Apri menu"><span></span></button>
-    <nav class="nav"><a href="index.html">Home</a><a href="gruppo.html">Il Gruppo</a><a href="attivita.html">Attività</a><a href="prodotti.html">Prodotti</a><a href="parco-macchine.html">Parco Macchine</a><a href="certificazioni.html">Certificazioni</a><a href="lavora-con-noi.html">Lavora con noi</a><a href="contatti.html" class="nav__cta">Contattaci</a></nav>
-  </div></div>
-</header>
+<!-- HEADER (template) -->
+<div id="site-h"></div>
+<script>document.getElementById('site-h').innerHTML=window.SITE_H</script>
 
 <section class="page-hero">
   <div class="page-hero__bg" style="background-image:url('assets/img/DJI_0337-1920x1150.jpg');"></div>
@@ -96,36 +97,13 @@
   </div>
 </section>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="site-footer__grid">
-      <div class="footer-block"><div class="footer-brand"><img src="assets/img/icose-logo.jpg" alt="ICOSE S.p.A." class="brand__logo"></div><p>Da oltre 50 anni: opere edili, infrastrutture, estrazione e produzione di conglomerati in Liguria e Piemonte.</p></div>
-      <div><h4>Azienda</h4><ul><li><a href="gruppo.html">Il Gruppo</a></li><li><a href="attivita.html">Attività</a></li><li><a href="prodotti.html">Prodotti</a></li><li><a href="parco-macchine.html">Parco Macchine</a></li><li><a href="certificazioni.html">Certificazioni</a></li></ul></div>
-      <div><h4>Persone</h4><ul><li><a href="lavora-con-noi.html">Lavora con noi</a></li><li><a href="contatti.html">Contattaci</a></li><li><a href="whistleblowing.html">Whistleblowing</a></li></ul></div>
-      <div class="footer-block">
-        <h4>Contatti</h4>
-        <strong class="label">Uffici tecnici e amministrativi</strong>
-        <address>17035 Cisano sul Neva (SV)<br>Via Benessea, 29/A<br><a href="tel:+390182589021">Tel. 0182 58921</a><br><a href="mailto:icose@icose.it">icose@icose.it</a></address>
-        <strong class="label">Impianti e cava</strong>
-        <address>17039 Zuccarello (SV)<br>Regione Isola, snc<br><a href="tel:+390182790033">Tel. 0182 79033</a></address>
-      </div>
-    </div>
-  </div>
-  <div class="funding-strip">
-    <div class="container">
-      <div class="funding-strip__logos">
-        <img src="assets/img/filse21_27.png" alt="Coesione Italia 21-27 Liguria · Cofinanziato dall'Unione europea · Repubblica Italiana · Regione Liguria">
-      </div>
-      <p class="funding-strip__text">L'impresa ha ricevuto risorse del PR FESR Liguria 2021 – 2027 a valere sull'azione 1.2.3 — Bando supporto allo sviluppo di progetti di digitalizzazione nelle MPMI – pos. 1385.</p>
-      <p class="funding-strip__codice">Codice univoco ufficio per invio fatture elettroniche <strong>A4707H7</strong></p>
-    </div>
-  </div>
-  <div class="container">
-    <div class="site-footer__bar"><div>© <span id="yr"></span> ICOSE S.p.A. · Sede legale Paroldo (CN), Regione Bovina 2 · P.IVA 02158740049 · SDI A4707H7</div><div><a href="lavora-con-noi.html#">Privacy</a> · <a href="lavora-con-noi.html#">Cookie</a> · <a href="whistleblowing.html">Whistleblowing</a> · <a href="lavora-con-noi.html#">D.Lgs. 231/01</a></div></div>
-  </div>
-</footer>
+<!-- FOOTER (template) -->
+<div id="site-f"></div>
+<script>document.getElementById('site-f').innerHTML=window.SITE_F</script>
 
-<div class="cookie-banner"><div>Utilizziamo cookie tecnici e, previo consenso, cookie analitici e di profilazione. <a href="lavora-con-noi.html#">Cookie policy</a>.</div><div class="cookie-banner__actions"><button class="btn-decline" data-choice="decline">Solo tecnici</button><button class="btn-accept" data-choice="accept">Accetta tutti</button></div></div>
+<!-- COOKIE BANNER (template) -->
+<div id="site-c"></div>
+<script>document.getElementById('site-c').innerHTML=window.SITE_C</script>
 
 <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 <div class="scroll-progress"></div>
