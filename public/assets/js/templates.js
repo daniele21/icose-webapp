@@ -4,16 +4,6 @@
 
 window.SITE_H =
 `<header class="site-header">
-  <div class="site-header__topbar">
-    <div class="container">
-      <div>Uffici Cisano sul Neva (SV) \u00b7 <a href="tel:+390182589021">0182 58921</a> \u00b7 <a href="mailto:icose@icose.it">icose@icose.it</a></div>
-      <div class="tb-links">
-        <a href="contatti.html">Contattaci</a>
-        <a href="lavora-con-noi.html">Lavora con noi</a>
-        <a href="whistleblowing.html">Whistleblowing</a>
-      </div>
-    </div>
-  </div>
   <div class="container">
     <div class="site-header__bar">
       <a href="index.html" class="brand" aria-label="ICOSE S.p.A.">
