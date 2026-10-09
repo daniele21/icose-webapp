@@ -18,6 +18,30 @@
     });
   }
 
+  // Hero title — effetto "costruzione": ogni lettera viene eretta dal basso
+  const heroTitle = document.querySelector('.hero-title');
+  if (heroTitle) {
+    const fullText = heroTitle.textContent.trim();
+    heroTitle.setAttribute('aria-label', fullText);
+    const frag = document.createDocumentFragment();
+    let letterIndex = 0;
+    fullText.split(/\s+/).forEach((word) => {
+      const wordEl = document.createElement('span');
+      wordEl.className = 'ht-word';
+      wordEl.setAttribute('aria-hidden', 'true');
+      Array.from(word).forEach((ch) => {
+        const letterEl = document.createElement('span');
+        letterEl.className = 'ht-letter';
+        letterEl.textContent = ch;
+        letterEl.style.setProperty('--i', letterIndex++);
+        wordEl.appendChild(letterEl);
+      });
+      frag.appendChild(wordEl);
+    });
+    heroTitle.textContent = '';
+    heroTitle.appendChild(frag);
+  }
+
   // Mark active nav
   const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   document.querySelectorAll('.nav a').forEach(a => {

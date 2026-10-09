@@ -249,7 +249,7 @@ strong { font-weight: 600; color: var(--c-ink); }
   background: var(--c-ink);
   overflow: hidden;
   isolation: isolate;
-  min-height: 60vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   padding: 180px 0;
@@ -267,16 +267,17 @@ strong { font-weight: 600; color: var(--c-ink); }
   z-index: -1;
 }
 
-.hero__inner { position: relative; z-index: 1; max-width: 760px; }
+.hero__inner { position: relative; z-index: 1; max-width: 750px; }
 .hero h1 {
   color: #fff;
   margin-bottom: 22px;
 }
 .hero p.lead {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: rgba(255,255,255,.9);
   margin-bottom: 32px;
   line-height: 1.6;
+  font-weight: 400;
 }
 .hero__ctas { display: flex; gap: 14px; flex-wrap: wrap; }
 
@@ -817,6 +818,51 @@ section { padding: 90px 0; }
   color: #fff;
   margin-bottom: 22px;
 }
+/* Hero title — effetto "costruzione": ogni lettera viene eretta dal basso, una ad una */
+.hero-title {
+  font-size: clamp(2rem, 4vw, 5rem);
+}
+.hero-title .ht-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: .22em;
+  margin-bottom: -.22em;
+  margin-right: .26em;
+}
+.hero-title .ht-word:last-of-type { margin-right: 0; }
+.hero-title .ht-letter {
+  --i: 0;
+  --ld: calc(.25s + var(--i) * 40ms);
+  display: inline-block;
+  transform-origin: 50% 100%;
+  animation: ht-build .72s cubic-bezier(.16, 1, .3, 1) var(--ld) backwards;
+}
+@keyframes ht-build {
+  0% {
+    transform: translateY(115%) scale(1, .85);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  40% { opacity: 1; }
+  100% {
+    transform: translateY(0) scale(1, 1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Hero lead + CTA — apparizione dal basso, immediata */
+.hero .lead,
+.hero .hero__ctas {
+  opacity: 0;
+  transform: translateY(28px);
+  animation: ht-appear-up 1.5s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes ht-appear-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .hero__badge::before {
   content: "";
   width: 6px; height: 6px;
@@ -1151,5 +1197,8 @@ body { text-rendering: optimizeLegibility; }
   }
   .hero__bg { animation: none !important; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .hero-title .ht-word { overflow: visible; padding-bottom: 0; margin-bottom: 0; }
+  .hero-title .ht-letter { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+  .hero .lead, .hero .hero__ctas { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
