@@ -432,6 +432,7 @@ section { padding: 90px 0; }
 .split--text-only { grid-template-columns: 1fr; }
 @media (max-width: 900px) { .split { grid-template-columns: 1fr; gap: 40px; } }
 .split__media {
+  position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
   aspect-ratio: 4/3;
@@ -946,6 +947,15 @@ section { padding: 90px 0; }
 /* Split image — subtle border + zoom on hover */
 .split__media {
   transition: transform .6s var(--ease-out), box-shadow .35s;
+}
+.split__caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: rgba(26,26,26,.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 22px 26px;
+  border-left: 3px solid var(--c-accent);
 }
 .split:hover .split__media { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
