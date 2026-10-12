@@ -1145,8 +1145,10 @@ body { text-rendering: optimizeLegibility; }
 /* =========================================================
    Page-specific components (ex-inline from contatti, whistleblowing)
    ========================================================= */
-.map-embed { aspect-ratio: 16/7; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--c-line); margin-top: 36px; }
-.map-embed iframe { width:100%; height:100%; border:0; display:block; }
+.map-embed { height: 420px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--c-line); margin-top: 36px; }
+.map-embed #map { width: 100%; height: 100%; }
+.map-embed .leaflet-container { border-radius: var(--radius-md); }
+.map-embed .pin-accent img { filter: hue-rotate(120deg) saturate(3) brightness(.85); }
 .contact-card { background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-md); padding: 28px; }
 .contact-card h3 { margin-top: 12px; font-size: 1.1rem; }
 .contact-card p, .contact-card address { margin: 6px 0; color: var(--c-ink-2); font-style: normal; line-height: 1.6; font-size: .95rem; }
@@ -1202,3 +1204,230 @@ body { text-rendering: optimizeLegibility; }
   .hero .lead, .hero .hero__ctas { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
+/* =========================================================
+   CRONOSTORIA ORIZZONTALE — pagina "Il Gruppo"
+   Sezione alta un solo schermo con scroll orizzontale nativo
+   + snap. La rotella verticale viene convertita (via JS) in
+   movimento orizzontale: la pagina non scende verticalmente
+   dentro la sezione (funziona anche senza JS: scroll nativo).
+   ========================================================= */
+.hs {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background: #ffffff;
+  color: var(--c-ink);
+  padding: 0;
+  overflow: hidden;
+}
+.hs__viewport {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: none;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.hs__viewport::-webkit-scrollbar { display: none; }
+.hs__viewport { cursor: grab; }
+.hs__viewport.is-dragging { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.hs__track {
+  display: flex;
+  align-items: center;
+  min-height: 100%;
+  width: max-content;
+}
+
+/* --- Pannello --- */
+.hs-panel {
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: clamp(28px, 4.5vw, 80px);
+  padding: clamp(44px, 6vw, 96px) clamp(22px, 6vw, 96px);
+  background: #ffffff;
+}
+.hs-panel--flip { grid-template-columns: 1fr 1.1fr; }
+.hs-panel--flip .hs-panel__media { order: 2; }
+
+/* --- Media --- */
+.hs-panel__media {
+  margin: 0;
+  align-self: stretch;
+  min-height: 0;
+  border-radius: var(--radius-lg);
+  background-color: #eeeeee;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .45);
+}
+.hs-panel__media::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .22), transparent 40%);
+  pointer-events: none;
+}
+.hs-panel__media figcaption {
+  position: absolute;
+  left: 14px; bottom: 14px; z-index: 2;
+  margin: 0;
+  font-size: .72rem;
+  letter-spacing: .06em;
+  color: rgba(255, 255, 255, .85);
+  background: rgba(26, 26, 26, .55);
+  border: 1px solid rgba(255, 255, 255, .12);
+  padding: 6px 11px;
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+/* Media tipografico (anni / parole) */
+.hs-panel__media--type {
+  background:
+    linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 45%, rgba(226, 0, 122, .16), transparent 62%),
+    #141414;
+  background-size: 38px 38px, 38px 38px, auto, auto;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+}
+.hs-panel__media--final {
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(226, 0, 122, .22), transparent 66%),
+    #101010;
+}
+.hs-panel__media-year,
+.hs-panel__media-word {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: clamp(5.5rem, 15vw, 12.5rem);
+  line-height: .85;
+  letter-spacing: -.05em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, .30);
+  user-select: none;
+}
+.hs-panel__media-word { font-size: clamp(3rem, 9vw, 7rem); }
+.hs-panel__media-note {
+  font-family: 'Manrope', sans-serif;
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--c-accent-2);
+}
+
+/* --- Corpo --- */
+.hs-panel__body { position: relative; z-index: 2; max-width: 500px; }
+.hs-panel__date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--c-ink);
+  margin-bottom: 18px;
+}
+/* .hs-panel__date::before { rimosso — il trattino è ora gestito da .section-divider sopra .eyebrow } */
+.hs-panel h2 { color: var(--c-ink); margin-bottom: 16px; font-size: clamp(1.5rem, 2.6vw, 2.3rem); }
+.hs-panel p { color: rgba(26, 26, 26, .8); font-size: 1.02rem; line-height: 1.7; margin-bottom: 0; }
+.hs-panel strong { color: var(--c-ink-2); }
+.hs-panel__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.hs-panel__tag {
+  font-family: 'Manrope', sans-serif;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, .85);
+  border: 1px solid rgba(26, 26, 26, .25);
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+.hs-panel__tag--accent { color: var(--c-accent-2); border-color: rgba(226, 0, 122, .5); }
+.hs-panel__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+/* --- UI: hint + barra di avanzamento --- */
+.hs__progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0; z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 clamp(22px, 6vw, 96px) 30px;
+  pointer-events: none;
+  font-family: 'Manrope', sans-serif;
+}
+.hs__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, .58);
+  white-space: nowrap;
+}
+.hs__hint::after {
+  content: "→";
+  color: var(--c-accent-2);
+  animation: hs-hint 1.6s var(--ease-out) infinite;
+}
+@keyframes hs-hint {
+  0%, 100% { transform: translateX(0); opacity: .35; }
+  50% { transform: translateX(6px); opacity: 1; }
+}
+.hs__progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(26, 26, 26, .14);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.hs__progress-bar {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--c-accent);
+  border-radius: 2px;
+}
+.hs__counter {
+  min-width: 60px;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: rgba(26, 26, 26, .65);
+  text-align: right;
+}
+
+/* --- Mobile --- */
+@media (max-width: 860px) {
+  .hs-panel {
+    grid-template-columns: 1fr;
+    grid-template-rows: 42vh 1fr;
+    align-content: center;
+    gap: 26px;
+    padding: 76px 22px 74px;
+    overflow-y: auto;
+  }
+  .hs-panel--flip { grid-template-columns: 1fr; }
+  .hs-panel--flip .hs-panel__media, .hs-panel__media { order: 1; }
+  .hs-panel__body { order: 2; max-width: none; }
+  .hs-panel__date { font-size: 2.1rem; }
+  .hs__hint { display: none; }
+  .hs__progress { padding-bottom: 22px; }
+}

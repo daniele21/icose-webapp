@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
   <meta property="og:title" content="Contatti · ICOSE S.p.A.">
   <meta property="og:description" content="Contatti ICOSE S.p.A.: sede legale Paroldo (CN), uffici Cisano sul Neva (SV), impianti e cava Zuccarello (SV), lavorazione ferro tondo Zuccarello.">
   <meta property="og:type" content="website">
@@ -26,7 +27,7 @@
   <div class="container">
     <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>Contatti</span></div>
     <span class="eyebrow">Contatti</span>
-    <h1>Quattro sedi tra Liguria e Piemonte.</h1>
+    <h1 class="hero-title">Quattro sedi tra Liguria e Piemonte.</h1>
     <p>Sede legale a Paroldo (CN), uffici tecnici e amministrativi a Cisano sul Neva (SV), impianti e cava a Zuccarello (SV), lavorazione ferro tondo a Zuccarello.</p>
   </div>
 </section>
@@ -64,7 +65,8 @@
     </div>
 
     <div class="map-embed" data-reveal>
-      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=8.10%2C44.10%2C8.20%2C44.18&amp;layer=mapnik&amp;marker=44.137%2C8.146" title="Mappa Cisano sul Neva - Zuccarello"></iframe>
+      <div id="map"></div>
+      <noscript>Mappa interattiva non disponibile — abilita JavaScript.</noscript>
     </div>
   </div>
 </section>
@@ -146,5 +148,122 @@
 <div class="scroll-progress"></div>
 <button class="to-top" aria-label="Torna su"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
 <script src="assets/js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  // --- Verifica che Leaflet sia stato caricato ---
+  if (typeof window.leaflet === 'undefined') {
+    console.error('Leaflet: namespace window.leaflet non trovato');
+    return;
+  }
+  var L = window.leaflet;
+
+  if (typeof L.map !== 'function') {
+    console.error('Leaflet: L.map non è una funzione — API:', Object.keys(L).sort().join(', '));
+    return;
+  }
+
+  var container = document.getElementById('map');
+  if (!container) return;
+
+  // --- Inizializza mappa con setView (API fondamentale Leaflet 1.x) ---
+  var map = L.map('map', {
+    zoomControl: true,
+    scrollWheelZoom: true,
+    attributionControl: false,
+  });
+  if (typeof map.setView === 'function') {
+    map.setView([44.2, 8.1], 10);
+  }
+
+  // --- Tiles OpenStreetMap ---
+  var tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  try {
+    L.tileLayer(tileUrl, {
+      maxZoom: 19,
+    }).addTo(map);
+  } catch (e) {
+    console.error('Leaflet: errore tileLayer —', e);
+  }
+
+  // --- PIN delle 4 sedi ---
+  var pins = [
+    { lat: 44.422,  lng: 7.826,  title: 'Sede legale',              label: 'Paroldo (CN)',          address: 'Regione Bovina, 2, 12070 Paroldo CN' },
+    { lat: 44.132,  lng: 8.154,  title: 'Uffici tecnici e amministrativi', label: 'Cisano sul Neva (SV)', address: 'Via Benessea, 29/A, 17035 Cisano sul Neva SV' },
+    { lat: 44.111,  lng: 8.057,  title: 'Impianti e cava',           label: 'Zuccarello (SV)',       address: 'Regione Isola, snc, 17039 Zuccarello SV' },
+    { lat: 44.110,  lng: 8.054,  title: 'Lavorazione ferro tondo',   label: 'Zuccarello (SV)',       address: 'Strada Morbè, 1, 17039 Zuccarello SV' },
+  ];
+
+  var markers = [];
+
+  var accentColor = getComputedStyle(document.body).getPropertyValue('--c-accent').trim() || '#e2007a';
+  var svgPin = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.79 42.27">'
+    + '<path d="m28.79,14.4c0,7.95-6.45,27.87-14.4,27.87S0,22.35,0,14.4,6.45,0,14.4,0s14.4,6.45,14.4,14.4Z" style="fill:' + accentColor + ';"/>'
+    + '<circle cx="14.4" cy="14.4" r="6" style="fill:#fff;"/>'
+    + '</svg>';
+
+  pins.forEach(function(p){
+    try {
+      var icon;
+      try {
+        icon = L.icon({
+          iconUrl: 'data:image/svg+xml,' + encodeURIComponent(svgPin),
+          iconSize: [29, 42],
+          iconAnchor: [14, 42],
+          popupAnchor: [0, -42],
+        });
+      } catch (_) { icon = null; }
+
+      var m = L.marker([p.lat, p.lng], {
+        title: p.title,
+        icon: icon,
+        className: 'pin-accent',
+      }).addTo(map);
+      m.bindPopup(
+        '<strong>' + p.title + '</strong><br>' +
+        '<span style="color:#e2007a;font-weight:600;">' + p.label + '</span><br>' +
+        '<span style="color:#555;">' + p.address + '</span>'
+      );
+      markers.push(m);
+    } catch (e) {
+      console.error('Leaflet: errore marker per', p.label, e);
+    }
+  });
+
+  // --- Zoom automatico su tutti i PIN ---
+  if (markers.length) {
+    try {
+      var lats = pins.map(function(p){ return p.lat; });
+      var lngs = pins.map(function(p){ return p.lng; });
+      var south = Math.min.apply(null, lats);
+      var north = Math.max.apply(null, lats);
+      var west  = Math.min.apply(null, lngs);
+      var east  = Math.max.apply(null, lngs);
+      var pad_lat = (north - south) * 0.12;
+      var pad_lng = (east - west) * 0.12;
+      map.fitBounds([
+        [south - pad_lat, west  - pad_lng],
+        [north + pad_lat, east  + pad_lng]
+      ]);
+    } catch (e) {
+      console.error('Leaflet: errore fitBounds —', e);
+    }
+  }
+
+  console.log('Leaflet: mappa inizializzata con', markers.length, 'PIN');
+
+  // Fallback: se L.icon() non ha funzionato, sostituisce manualmente l'icona
+  setTimeout(function(){
+    var dataUri = 'data:image/svg+xml,' + encodeURIComponent(svgPin);
+    document.querySelectorAll('#map .leaflet-marker-icon img').forEach(function(img){
+      if (img.src && img.src.indexOf('data:image/svg') === -1) {
+        img.src = dataUri;
+      }
+    });
+  }, 800);
+})();
+</script>
 </body>
 </html>
