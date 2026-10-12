@@ -220,6 +220,49 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
   document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
 
+  // Counter animation per le statistiche (grid-stats)
+  var gridStats = document.querySelector('.grid-stats');
+  if (gridStats) {
+    var counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.stat__num').forEach(animateCounter);
+          counterObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    counterObserver.observe(gridStats);
+  }
+
+  function animateCounter(el) {
+    var origHTML = el.innerHTML;
+    var txt = el.textContent || '';
+    var m = txt.match(/^([\d]+)(.*)/);
+    if (!m) return;
+    var target  = parseInt(m[1], 10);
+    var suffix  = m[2]; // es. "+"
+    var step    = target > 100 ? Math.max(1, Math.floor(target / 80)) : 1;
+    var adj     = Math.ceil(target / step);
+    var dur     = 1600; // ms
+    var t0      = performance.now();
+
+    function tick() {
+      var elapsed = performance.now() - t0;
+      var p = Math.min(elapsed / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3); // ease-out cubico
+      var cur = Math.floor(eased * adj) * step;
+      var html = String(cur);
+      if (suffix) html += '<small>' + suffix + '</small>';
+      el.innerHTML = html;
+      if (p < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.innerHTML = origHTML; // valore esatto finale
+      }
+    }
+    tick();
+  }
+
   // Sticky header shadow + scroll progress + back-to-top
   const header = document.querySelector('.site-header');
   const progress = document.querySelector('.scroll-progress');
@@ -242,18 +285,87 @@
     toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
-  // Whistleblowing demo form — codice univoco di tracciamento
+  // Whistleblowing form — invio diretto via Firebase Cloud Function
   const wbForm = document.querySelector('#wb-form');
   if (wbForm) {
-    wbForm.addEventListener('submit', (e) => {
+    // URL della Cloud Function — aggiorna dopo il deploy
+    var WB_ENDPOINT = 'https://us-central1-icose-spa.cloudfunctions.net/sendWhistleblowing';
+
+    // Mostra/nascondi campi identificativi in base alla modalità
+    var wbModalita = document.getElementById('wb-modalita');
+    var wbIdentFields = document.getElementById('wb-ident-fields');
+    if (wbModalita && wbIdentFields) {
+      wbModalita.addEventListener('change', function(){
+        var visibile = wbModalita.value === 'ident';
+        wbIdentFields.style.display = visibile ? '' : 'none';
+        // Rendi obbligatori/facoltativi
+        ['wb-nome', 'wb-cognome', 'wb-email'].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.required = visibile;
+        });
+      });
+    }
+
+    wbForm.addEventListener('submit', function(e){
       e.preventDefault();
-      const code = 'ICS-' + Math.random().toString(36).slice(2, 8).toUpperCase() + '-' + Date.now().toString().slice(-4);
-      const out = document.querySelector('#wb-result');
-      if (out) {
+
+      var submitBtn = document.getElementById('wb-submit');
+      var originalLabel = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Invio in corso…';
+
+      // Leggi token reCAPTCHA
+      var recaptchaResponse = '';
+      var recaptchaEl = document.getElementById('g-recaptcha-response');
+      if (recaptchaEl) recaptchaResponse = recaptchaEl.value;
+
+      var payload = {
+        modalita:          document.getElementById('wb-modalita').value,
+        nome:              (document.getElementById('wb-nome')      || {}).value || '',
+        cognome:           (document.getElementById('wb-cognome')   || {}).value || '',
+        email:             (document.getElementById('wb-email')     || {}).value || '',
+        categoria:         document.getElementById('wb-categoria').value,
+        data:              document.getElementById('wb-data').value,
+        luogo:             document.getElementById('wb-luogo').value,
+        descrizione:       document.getElementById('wb-descrizione').value,
+        soggetti:          document.getElementById('wb-soggetti').value,
+        email_tracciamento: document.getElementById('wb-email-tracciamento').value,
+        recaptcha_token:   recaptchaResponse,
+      };
+
+      fetch(WB_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var out = document.getElementById('wb-result');
+        if (data.success) {
+          out.style.display = 'block';
+          out.innerHTML =
+            '<p style="margin:0 0 8px; color:var(--c-success); font-weight:600;">Segnalazione inviata con successo.</p>' +
+            '<p style="margin:0 0 12px;">Codice di tracciamento: <strong>' + (data.codice || '—') + '</strong></p>' +
+            '<p class="text-muted" style="margin:12px 0 0; font-size:.9rem;">Conserva questo codice per riferimento futuro.</p>';
+          out.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          out.style.display = 'block';
+          out.innerHTML = '<p style="color:#c33; font-weight:600;">Errore nell\'invio. ' + (data.error || 'Riprova più tardi.') + '</p>';
+        }
+      })
+      .catch(function(err){
+        var out = document.getElementById('wb-result');
         out.style.display = 'block';
-        out.querySelector('strong').textContent = code;
-        out.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+        out.innerHTML = '<p style="color:#c33; font-weight:600;">Errore di connessione. Verifica la tua connessione Internet e riprova.</p>';
+      })
+      .finally(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+        wbForm.querySelectorAll('input, select, textarea').forEach(function(el){ el.value = ''; });
+        document.getElementById('wb-priv').checked = false;
+        // Nascondi campi identificativi
+        if (wbIdentFields) wbIdentFields.style.display = 'none';
+      });
     });
   }
 

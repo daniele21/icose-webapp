@@ -1,0 +1,11 @@
+{
+  "name": "icose-whistleblowing",
+  "version": "1.0.0",
+  "description": "Cloud Function per invio segnalazioni Whistleblowing ICOSE",
+  "main": "index.js",
+  "dependencies": {
+    "nodemailer": "^6.9.0",
+    "firebase-functions": "^4.0.0"
+  },
+  "private": true
+}

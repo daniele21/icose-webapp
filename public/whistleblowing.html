@@ -15,6 +15,7 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://icose-spa.web.app/assets/img/icose-logo.jpg">
   <script src="assets/js/templates.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -102,14 +103,30 @@
     <form id="wb-form" class="form mt-3">
       <div class="field">
         <label>Modalità di segnalazione *</label>
-        <select required>
+        <select id="wb-modalita" required>
           <option value="anon">Anonima — non fornisco i miei dati</option>
           <option value="ident">Identificata — fornisco i miei dati di contatto</option>
         </select>
       </div>
 
+      <!-- Campi identificativi (mostrati solo se "Identificata") -->
+      <div id="wb-ident-fields" style="display:none;">
+        <div class="field">
+          <label>Nome *</label>
+          <input type="text" id="wb-nome" placeholder="Il tuo nome">
+        </div>
+        <div class="field">
+          <label>Cognome *</label>
+          <input type="text" id="wb-cognome" placeholder="Il tuo cognome">
+        </div>
+        <div class="field">
+          <label>Email *</label>
+          <input type="email" id="wb-email" placeholder="tua@email.it">
+        </div>
+      </div>
+
       <div class="field"><label>Categoria *</label>
-        <select required>
+        <select id="wb-categoria" required>
           <option value="">Seleziona…</option>
           <option>Illecito amministrativo / civile / penale</option>
           <option>Violazione Modello 231 / Codice Etico</option>
@@ -124,32 +141,27 @@
 
       <div class="field">
         <label>Quando si sono verificati i fatti? *</label>
-        <input type="text" placeholder="Indicare data o periodo" required>
+        <input type="text" id="wb-data" placeholder="Indicare data o periodo" required>
       </div>
 
       <div class="field">
         <label>Dove si sono verificati i fatti? *</label>
-        <input type="text" placeholder="Cantiere, sede, impianto, reparto…" required>
+        <input type="text" id="wb-luogo" placeholder="Cantiere, sede, impianto, reparto…" required>
       </div>
 
       <div class="field">
         <label>Descrizione dettagliata dei fatti *</label>
-        <textarea required placeholder="Descrivi i fatti in modo circostanziato: cosa è accaduto, chi è coinvolto, perché lo ritieni illecito."></textarea>
+        <textarea id="wb-descrizione" required placeholder="Descrivi i fatti in modo circostanziato: cosa è accaduto, chi è coinvolto, perché lo ritieni illecito."></textarea>
       </div>
 
       <div class="field">
         <label>Soggetti coinvolti (facoltativo)</label>
-        <input type="text" placeholder="Persone, ruoli, società coinvolte">
-      </div>
-
-      <div class="field">
-        <label>Documenti / prove (facoltativo)</label>
-        <input type="file" multiple>
+        <input type="text" id="wb-soggetti" placeholder="Persone, ruoli, società coinvolte">
       </div>
 
       <div class="field">
         <label>Email per ricevere il codice di tracciamento (facoltativo)</label>
-        <input type="email" placeholder="Lasciandola vuota il codice viene mostrato solo a video">
+        <input type="email" id="wb-email-tracciamento" placeholder="Lasciandola vuota il codice viene mostrato solo a video">
       </div>
 
       <div class="field field--check">
@@ -157,15 +169,18 @@
         <label for="wb-priv">Dichiaro di aver letto l'<a href="whistleblowing.html#" style="color:var(--c-accent); font-weight:600;">informativa privacy</a> del canale Whistleblowing e di segnalare in buona fede.</label>
       </div>
 
-      <button type="submit" class="btn btn--primary">Invia segnalazione</button>
+      <!-- reCAPTCHA -->
+      <div class="field" style="border:none; padding:0; margin:0;">
+        <div id="wb-recaptcha" class="g-recaptcha" data-sitekey="6LcI_placeholder"></div>
+      <!-- ⚠️ Sostituisci 6LcI_placeholder con la tua Site Key (https://www.google.com/recaptcha/admin) -->
+      </div>
+
+      <button type="submit" class="btn btn--primary" id="wb-submit">
+        Invia segnalazione <span class="arrow">→</span>
+      </button>
     </form>
 
-    <div id="wb-result">
-      <p style="margin:0 0 8px; color:var(--c-success); font-weight:600;">Segnalazione ricevuta correttamente.</p>
-      <p style="margin:0 0 12px;">Codice univoco di tracciamento:</p>
-      <strong>ICS-XXXXXX-0000</strong>
-      <p class="mt-3 text-muted" style="margin:12px 0 0; font-size:.9rem;">Conserva questo codice per accedere allo stato della pratica e integrare informazioni.</p>
-    </div>
+    <div id="wb-result" style="display:none;"></div>
   </div>
 </section>
 
